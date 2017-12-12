@@ -1,0 +1,19 @@
+tf1 =
+ 
+  From input "u1" to output "y1":
+            0.002561
+  ----------------------------
+  s^2 + 5.979e-05 s + 0.002269
+ 
+Name: tf1
+Continuous-time identified transfer function.
+
+Parameterization:
+   Number of poles: 2   Number of zeros: 0
+   Number of free coefficients: 3
+   Use "tfdata", "getpvec", "getcov" for parameters and their uncertainties.
+
+Status:                                            
+Estimated using TFEST on time domain data "mydata".
+Fit to estimation data: 76.47% (simulation focus)  
+FPE: 485, MSE: 482                                 
