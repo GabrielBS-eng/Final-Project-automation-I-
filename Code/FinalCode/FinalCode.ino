@@ -113,7 +113,6 @@ void loop()
   Serial.print("\n\nMaybe x:");
   PotenX = analogRead(0);
   Serial.print(PotenX);
-  delay(500);
   Serial.print("\nMaybe y:");
   PotenY = analogRead(1);
   Serial.print(PotenY);
