@@ -20,32 +20,15 @@ int ENA = 5;
 int IN1 = 7;
 int IN2 = 8;
 
-int C1 = 11;
-int C2 = 10;
-
-int enc1;
-int enc2;
-
 int Pwm = 20;
 
 int count=0;
-
-void pulse()
-{
-    if(digitalRead(11) == LOW)
-      count++;
-    else
-      count--;
-}
 
 //############################################################
 //coder interrupt 
 void encoderCounts()
 {
-  //delayMicroseconds(50);
   counter++;
-  //Serial.print("\t counter: ");
-  //Serial.print(counter);
 }
 //############################################################
 //timer interrupt 
@@ -65,8 +48,8 @@ void timerIsr()
 }
 //############################################################
 
-void setup() {
-  // put your setup code here, to run once:
+void setup() 
+{
   Serial.begin(9600);
   analogReference(DEFAULT);
   attachInterrupt(0 , encoderCounts , RISING); //connect the encoder pin to 0 interput pin of Arduino like pin 2 in arduino uno 
@@ -76,16 +59,8 @@ void setup() {
   eclipsed_sec=0;
 }
 
-void loop(){
-  // put your main code here, to run repeatedly:
-    
-  //enc1 = analogRead(C1);
-  //enc2 = analogRead(C2);
-
-  //Serial.print("\n\nencoder 1: ");
-  //Serial.print(enc1);
-  //Serial.print("\nencoder 2: ");
-  //Serial.print(enc2);
+void loop()
+{
   Serial.print("\n\n");
   delay(1000);
 
@@ -102,11 +77,6 @@ void loop(){
     analogWrite(ENA,Pwm);
   }
 
-  pinMode(C2, INPUT_PULLUP); 
-  pinMode(C1, INPUT_PULLUP); 
-  //attachInterrupt(0, pulse, LOW); 
-  //attachInterrupt(0, pulse, FALLING);
-  
   Serial.print("\nencoder_count:");
   Serial.print(count);
 }
