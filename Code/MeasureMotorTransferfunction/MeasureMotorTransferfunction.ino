@@ -12,7 +12,6 @@
 //TODO: USE ONE ENCODER OF EACH MOTOR IN PARALEL
 
 #include <TimerOne.h> //For the encoder
-//#include <PID_v1.h>
 
 #define DEBUG 1
   // DEBUG 0: normal code (no debugging additions)
@@ -29,24 +28,12 @@ int IN4 = 48;
 //############################################################
 
 
-
-//############################### PID Parameters ########################################
-double kpL = 0.6, kiL = 0.009, kdL = 12.4;
-//int kpR = 0, kiR = 0, kdR = 0;
-//-----------------
-double verrL = 0;
-double verrLold = 0;
-double verrLsum = 0;
-double pwmL = 0;
-//#####################################################################################
-
-
 //########################### ENCODER PARAMETERS AND FUNCTIONS ###########################
 int Encod = 0; //Either pin2 or pin3 for Arduino Uno and Nano; pin2, pin3, pin18, pin19, pin20 or pin21 for Arduino Mega.
 //VALUE 0 MEANS pin2, 1 MEANS pin3, 2 MEANS pin 18, AND SO ON.
 
 // add set time in value of micro seconds 
-volatile uint32_t set_time=100000;
+volatile uint32_t set_time=1000000*0.001;
 
 //Motor Parameters 
 const float pulse_per_revolution=11; //11 counts per revolution
@@ -59,6 +46,7 @@ volatile float vRcurr = 0.0;     //spped of motor
 volatile float vLcurr = 0.0;
 
 int count=0;
+int timecurr=0;
 //#####################################################################################
 
 
@@ -79,53 +67,15 @@ void timerIsr()
   //Serial.print("Speed: ");
   //Serial.print(vRcurr);
   //Serial.print(vLcurr);
+  timecurr = millis();
+//  Serial.print("\t");
+//  Serial.print(vLcurr);
+//  Serial.print("\n");
   counter_motor_right = 0;
   counter_motor_left = 0;
   eclipsed_sec = 0;
 }
 //===========================================================================================
-
-
-//=========================== SPEED CONTROL FUNCTION ================================
-void setvmotorL(float vLsp) {
-  if (vLsp > 0) { //set rotation direction
-    digitalWrite(IN1, HIGH);
-    digitalWrite(IN2, LOW);
-  }
-  else if (vLsp < 0) {
-    digitalWrite(IN1, LOW);
-    digitalWrite(IN2, HIGH);
-  }
-  else {
-    digitalWrite(IN1, LOW);
-    digitalWrite(IN2, LOW);
-  }
-  
-  verrL = vLsp - vLcurr; //calculate error
-  pwmL = verrL * kpL + verrLsum * kiL + (verrL - verrLold) * kpL; //apply controller
-  verrLold = verrL; //store current error for next run
-  verrLsum += verrL; //add error to integral
-  
-  if (verrLsum >4000) verrLsum = 4000;
-  if (verrLsum <-4000) verrLsum = -4000;
-
-  min(max(pwmL, 0), 255); //restrict PWM from 0 to 255
-  analogWrite(ENA,pwmL); //send PWM to motor
-
-  #if DEBUG == 1
-    Serial.print(millis()); //time
-    Serial.print("\t");
-    Serial.print(vLsp); //setpoint
-    Serial.print("\t");
-    Serial.print(vLcurr); //current speed
-    Serial.print("\t");
-    Serial.print(pwmL); // PWM
-    Serial.print("\n");
-  #endif
-  }
-//======================================================================================
-
-
 
 
 //###################################### SETUP ############################################
@@ -142,13 +92,24 @@ void setup()
   counter_motor_right = 0;
   counter_motor_left = 0;
   eclipsed_sec=0;
+  
+  digitalWrite(IN1,HIGH);
+  digitalWrite(IN2,LOW);
+  delay(1000);
+  Serial.print("Motor on: ");
+  Serial.print(millis());
+  Serial.print("\n");
+  analogWrite(ENA,255);
 }
 
 
 //###################################### LOOP ############################################
 void loop()
 {
-  
-setvmotorL(100);
-delay(5);
+Serial.print(timecurr);
+Serial.print("\t");
+Serial.print(vLcurr);
+Serial.print("\n");
+delay(2);
+
 }
