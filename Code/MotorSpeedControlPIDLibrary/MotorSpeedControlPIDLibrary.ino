@@ -31,7 +31,7 @@ int IN4 = 48;
 
 
 //############################### PID Parameters ########################################
-double kpL = 2.1308, kiL = 4.7107, kdL = 0.1527;
+double kpL = 0.28, kiL = 3.5, kdL = 0;
 //int kpR = 0, kiR = 0, kdR = 0;
 //-----------------
 double LSetpoint = 0;
@@ -146,6 +146,7 @@ void setup()
   counter_motor_right = 0;
   counter_motor_left = 0;
   eclipsed_sec=0;
+  delay(500);
 }
 
 

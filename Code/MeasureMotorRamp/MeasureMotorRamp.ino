@@ -34,7 +34,7 @@ int Encod = 0; //Either pin2 or pin3 for Arduino Uno and Nano; pin2, pin3, pin18
 //VALUE 0 MEANS pin2, 1 MEANS pin3, 2 MEANS pin 18, AND SO ON.
 
 // add set time in value of micro seconds 
-volatile uint32_t set_time=50000; //0.05s
+volatile uint32_t set_time=30000; //0.005s
 
 //Motor Parameters 
 const float pulse_per_revolution=11; //11 counts per revolution
@@ -65,13 +65,18 @@ void timerIsr()
   vRcurr = (counter_motor_right/(eclipsed_sec*pulse_per_revolution*motor_gear_ratio)*1000000*60);  //RPM, 1000000 --> for converting micro to seconds
   vLcurr = (counter_motor_left/(eclipsed_sec*pulse_per_revolution*motor_gear_ratio)*1000000*60);  //RPM, 1000000 --> for converting micro to seconds 
   
-  timecurr = millis();
+  analogWrite(ENB,255);
+  //timecurr = micros();
   
-  Serial.print(timecurr);
+  //Serial.print(timecurr);
   Serial.print("\t");
-  Serial.print(i);
+  Serial.print(eclipsed_sec);
   Serial.print("\t");
-  Serial.print(vLcurr);
+  Serial.print(counter_motor_right);
+  Serial.print("\t");
+  Serial.print(counter_motor_left);
+  Serial.print("\t");
+  Serial.print(vRcurr);
   Serial.print("\n");
   
   counter_motor_right = 0;
@@ -86,18 +91,21 @@ void setup()
 {
   Serial.begin(9600);
   analogReference(DEFAULT);
+
+  digitalWrite(IN3,HIGH);
+  digitalWrite(IN4,LOW);
+  //analogWrite(ENA,255);
   
   attachInterrupt(0 , encoderCounts1 , RISING); //connect the encoder pin to 0 interput pin of Arduino like pin 2 in arduino mega 
   attachInterrupt(1 , encoderCounts2 , RISING); //connect the encoder pin to 1 interput pin of Arduino like pin 3 in arduino mega
   
-  Timer1.initialize(set_time);   //getting values of speed every 100 mili seconds set time
+  Timer1.initialize(set_time);   //getting values of speed
   Timer1.attachInterrupt(timerIsr);
   counter_motor_right = 0;
   counter_motor_left = 0;
   eclipsed_sec=0;
-  
-  digitalWrite(IN1,HIGH);
-  digitalWrite(IN2,LOW);
+
+
   delay(1000);
 }
 
@@ -105,24 +113,26 @@ void setup()
 //###################################### LOOP ############################################
 void loop()
 {
-  Serial.print("START motor on: ");
-  Serial.print(millis());
-  Serial.print("\n");
-
-
-  while (i<255){
-    analogWrite(ENA,i);
-    i=i+1;
-    delay(500);
-  }
-  
-  analogWrite(ENA,0);
-  i=0;
-  
-  Serial.print("END motor off: ");
-  Serial.print(millis());
-  Serial.print("\n");
-
-  
+//  Serial.print("START motor on: ");
+//  Serial.print(millis());
+//  Serial.print("\n");
+//
+//
+//  analogWrite(ENA,255);
+//  i=255;
+////  while (i<255){
+////    analogWrite(ENA,i);
+////    i=i+1;
+////    delay(500);
+////  }
+//  delay(4000);
+//  analogWrite(ENA,0);
+//  i=0;
+//  
+//  Serial.print("END motor off: ");
+//  Serial.print(millis());
+//  Serial.print("\n");
+//
+//  
   delay(4000);
 }
