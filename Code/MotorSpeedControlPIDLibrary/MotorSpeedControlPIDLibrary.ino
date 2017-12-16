@@ -12,7 +12,7 @@
 //TODO: USE ONE ENCODER OF EACH MOTOR IN PARALEL
 
 #include <TimerOne.h> //For the encoder
-//#include <PID_v1.h>
+#include <PID_v1.h>
 
 #define DEBUG 1
   // DEBUG 0: normal code (no debugging additions)
@@ -34,9 +34,11 @@ int IN4 = 48;
 double kpL = 2.1308, kiL = 4.7107, kdL = 0.1527;
 //int kpR = 0, kiR = 0, kdR = 0;
 //-----------------
-double verrL = 0;
-double verrLold = 0;
-double verrLsum = 0;
+double LSetpoint = 0;
+double LInput = 0;
+double LOutput = 0;
+PID LPID(&LInput, &LOutput, &LSetpoint, kpL, kiL, kdL, DIRECT);
+
 double pwmL = 0;
 int pwmLres;
 //#####################################################################################
@@ -101,15 +103,12 @@ void setvmotorL(float vLsp) {
     digitalWrite(IN1, LOW);
     digitalWrite(IN2, LOW);
   }
-  
-  verrL = vLsp - vLcurr; //calculate error
-  pwmL = verrL * kpL + verrLsum * kiL + (verrL - verrLold) * kpL; //apply controller
-  verrLold = verrL; //store current error for next run
-  verrLsum += verrL; //add error to integral
-  
-  //if (verrLsum >4000) verrLsum = 4000;
-  //if (verrLsum <-4000) verrLsum = -4000;
 
+  LSetpoint = vLsp;
+  LInput = vLcurr;
+  LPID.Compute();
+  pwmL = LOutput;
+  
   pwmLres = min(max(pwmL, 0), 255); //restrict PWM from 54 to 255
   analogWrite(ENA,pwmLres); //send PWM to motor
 
@@ -137,6 +136,8 @@ void setup()
   Serial.begin(9600);
   analogReference(DEFAULT);
   
+  LPID.SetMode(AUTOMATIC);
+  
   attachInterrupt(0 , encoderCounts1 , RISING); //connect the encoder pin to 0 interput pin of Arduino like pin 2 in arduino mega 
   attachInterrupt(1 , encoderCounts2 , RISING); //connect the encoder pin to 1 interput pin of Arduino like pin 3 in arduino mega
   
@@ -152,6 +153,6 @@ void setup()
 void loop()
 {
   
-setvmotorL(100);
+setvmotorL(200);
 delay(5);
 }
