@@ -49,14 +49,12 @@ void encoderCounts2(){counter_motor_left++;}
 //timer interrupt 
 void timerIsr()
 {
-  //eclipsed_sec++;
   eclipsed_sec=eclipsed_sec+set_time;     //add the value of set time
-  //Serial.print("\t eclipsed_sec: ");  
   Speed_right = (counter_motor_right/(eclipsed_sec*pulse_per_revolution*motor_gear_ratio)*1000000*60);  //RPM, 1000000 --> for converting micro to seconds
   Speed_left = (counter_motor_left/(eclipsed_sec*pulse_per_revolution*motor_gear_ratio)*1000000*60);  //RPM, 1000000 --> for converting micro to seconds 
-  Serial.println(Speed_right);
-  Serial.println(Speed_left);
-  Serial.println("\n");
+  //Serial.println(Speed_right);
+  //Serial.println(Speed_left);
+  //Serial.println("\n");
   counter_motor_right = 0;
   counter_motor_left = 0;
   eclipsed_sec = 0;
@@ -65,7 +63,6 @@ void timerIsr()
 //#######################################################################################################################################
 
 void setup() {
-  // put your setup code here, to run once: 
   Serial.begin(9600);
   analogReference(DEFAULT);
   attachInterrupt(0 , encoderCounts1 , RISING); //motorRight
@@ -78,7 +75,6 @@ void setup() {
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
   //Serial.print("\n\nx compensated:");
   PotenX = analogRead(2) + x_offset;
   if(PotenX < 0) PotenX = 0;
@@ -163,11 +159,19 @@ void loop() {
     speedMotorRight = speedMotorRight + ir_factor_motors;
   }
   
-  if(speedMotorLeft < 60) speedMotorLeft = 0;
+  if(speedMotorLeft < 50) speedMotorLeft = 0;
   if(speedMotorLeft > 255) speedMotorLeft = 255;
-  if(speedMotorRight < 60) speedMotorRight = 0;
+  if(speedMotorRight < 50) speedMotorRight = 0;
   if(speedMotorRight > 255) speedMotorRight =255;
 
   analogWrite(ENA, speedMotorLeft);
   analogWrite(ENB, speedMotorRight);
+
+  if(!(speedMotorLeft==0 && speedMotorRight ==0))
+  {
+    Serial.print("\nMotor Left (PWM): ");
+    Serial.print(speedMotorLeft);
+    Serial.print("\tMotor Right (PWM): ");
+    Serial.print(speedMotorRight);
+  }
 }
