@@ -25,11 +25,11 @@ int x_factor_motors, ir_factor_motors;
 int speedMotorRight, speedMotorLeft;
 
 //############################################# ENCODER PARAMETERS AND FUNCTIONS#########################################################
-int Encod = 0; //Either pin2 or pin3 for Arduino Uno and Nano; pin2, pin3, pin18, pin19, pin20 or pin21 for Arduino Mega.
+//int Encod = 0; //Either pin2 or pin3 for Arduino Uno and Nano; pin2, pin3, pin18, pin19, pin20 or pin21 for Arduino Mega.
 //VALUE 0 MEANS pin2, 1 MEANS pin3, 2 MEANS pin 18, AND SO ON.
 
 // add set time in value of micro seconds 
-volatile uint32_t set_time=500000;
+volatile uint32_t set_time=50000;
 
 //Motor Parameters 
 const float pulse_per_revolution=11; //11 counts per revolution
@@ -162,7 +162,7 @@ void loop() {
   if(speedMotorLeft < 50) speedMotorLeft = 0;
   if(speedMotorLeft > 255) speedMotorLeft = 255;
   if(speedMotorRight < 50) speedMotorRight = 0;
-  if(speedMotorRight > 255) speedMotorRight =255;
+  if(speedMotorRight > 255) speedMotorRight = 255;
 
   analogWrite(ENA, speedMotorLeft);
   analogWrite(ENB, speedMotorRight);
@@ -171,7 +171,11 @@ void loop() {
   {
     Serial.print("\nMotor Left (PWM): ");
     Serial.print(speedMotorLeft);
+    Serial.print("\tEncoder Left (RPM): ");
+    Serial.print(Speed_left);  
     Serial.print("\tMotor Right (PWM): ");
     Serial.print(speedMotorRight);
+    Serial.print("\tEncoder Right (RPM): ");
+    Serial.print(Speed_right);
   }
 }
