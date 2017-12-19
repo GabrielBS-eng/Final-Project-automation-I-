@@ -1,4 +1,5 @@
 #include <TimerOne.h>
+#include <PID_v1.h>
 
 //MOTOR LEFT
 #define ENA 44
@@ -24,8 +25,21 @@ int PotenX, PotenY, IRback, IRleft, IRright;
 int x_factor_motors, ir_factor_motors; 
 int speedMotorRight, speedMotorLeft;
 
+//############################# PID Parameters ########################################
+double kpL = 0.28, kiL = 3.5, kdL = 0;
+double kpR = 0.28, kiR = 3.5, kdR = 0;
+//-----------------
+double LSetpoint = 0, RSetpoint = 0;
+double LInput = 0, RInput = 0;
+double LOutput = 0, ROutput = 0;
+PID LPID(&LInput, &LOutput, &LSetpoint, kpL, kiL, kdL, DIRECT);
+PID RPID(&RInput, &ROutput, &RSetpoint, kpR, kiR, kdR, DIRECT);
+
+double pwmL = 0, pwmR = 0;
+int pwmLres, pwmRres = 0;
+//#####################################################################################
+
 //############################################# ENCODER PARAMETERS AND FUNCTIONS#########################################################
-//int Encod = 0; //Either pin2 or pin3 for Arduino Uno and Nano; pin2, pin3, pin18, pin19, pin20 or pin21 for Arduino Mega.
 //VALUE 0 MEANS pin2, 1 MEANS pin3, 2 MEANS pin 18, AND SO ON.
 
 // add set time in value of micro seconds 
@@ -62,7 +76,91 @@ void timerIsr()
 //========================================================
 //#######################################################################################################################################
 
+//=========================== SPEED CONTROL FUNCTION ================================
+void setvmotorL(float vLsp)
+{
+//  if (vLsp > 0)
+//  { //set rotation direction
+//    digitalWrite(IN1, LOW);
+//    digitalWrite(IN2, HIGH);
+//  }
+//  else if (vLsp < 0)
+//  {
+//    digitalWrite(IN1, HIGH);
+//    digitalWrite(IN2, LOW);
+//  }
+//  else
+//  {
+//    digitalWrite(IN1, LOW);
+//    digitalWrite(IN2, LOW);
+//  }
+
+  LSetpoint = vLsp;
+  LInput = Speed_left;
+  LPID.Compute();
+  pwmL = LOutput;
+  
+  pwmLres = min(max(pwmL, 0), 255); //restrict PWM from 54 to 255
+  analogWrite(ENA,pwmLres); //send PWM to motor
+
+//  #if DEBUG == 1
+//    Serial.print(millis()); //time
+//    Serial.print("\t");
+//    Serial.print(vLsp); //setpoint
+//    Serial.print("\t");
+//    Serial.print(vLcurr); //current speed
+//    Serial.print("\t");
+//    Serial.print(pwmL); // PWM
+//    Serial.print("\t");
+//    Serial.print(pwmLres); // PWM restricted
+//    Serial.print("\n");
+//  #endif
+}
+
+void setvmotorR(float vRsp)
+{
+//  if (vRsp > 0)
+//  { //set rotation direction
+//    digitalWrite(IN1, LOW);
+//    digitalWrite(IN2, HIGH);
+//  }
+//  else if (vRsp < 0)
+//  {
+//    digitalWrite(IN1, HIGH);
+//    digitalWrite(IN2, LOW);
+//  }
+//  else
+//  {
+//    digitalWrite(IN1, LOW);
+//    digitalWrite(IN2, LOW);
+//  }
+
+  RSetpoint = vRsp;
+  RInput = Speed_right;
+  RPID.Compute();
+  pwmR = ROutput;
+  
+  pwmRres = min(max(pwmR, 0), 255); //restrict PWM from 54 to 255
+  analogWrite(ENB,pwmRres); //send PWM to motor
+
+//  #if DEBUG == 1
+//    Serial.print(millis()); //time
+//    Serial.print("\t");
+//    Serial.print(vLsp); //setpoint
+//    Serial.print("\t");
+//    Serial.print(vLcurr); //current speed
+//    Serial.print("\t");
+//    Serial.print(pwmL); // PWM
+//    Serial.print("\t");
+//    Serial.print(pwmLres); // PWM restricted
+//    Serial.print("\n");
+//  #endif
+}
+//======================================================================================
+
 void setup() {
+  LPID.SetMode(AUTOMATIC);
+  
   Serial.begin(9600);
   analogReference(DEFAULT);
   attachInterrupt(0 , encoderCounts1 , RISING); //motorRight
@@ -167,15 +265,18 @@ void loop() {
   analogWrite(ENA, speedMotorLeft);
   analogWrite(ENB, speedMotorRight);
 
-  if(!(speedMotorLeft==0 && speedMotorRight ==0))
-  {
-    Serial.print("\nMotor Left (PWM): ");
-    Serial.print(speedMotorLeft);
-    Serial.print("\tEncoder Left (RPM): ");
-    Serial.print(Speed_left);  
-    Serial.print("\tMotor Right (PWM): ");
-    Serial.print(speedMotorRight);
-    Serial.print("\tEncoder Right (RPM): ");
-    Serial.print(Speed_right);
-  }
+//  if(!(speedMotorLeft==0 && speedMotorRight ==0))
+//  {
+//    Serial.print("\nMotor Left (PWM): ");
+//    Serial.print(speedMotorLeft);
+//    Serial.print("\tEncoder Left (RPM): ");
+//    Serial.print(Speed_left);  
+//    Serial.print("\tMotor Right (PWM): ");
+//    Serial.print(speedMotorRight);
+//    Serial.print("\tEncoder Right (RPM): ");
+//    Serial.print(Speed_right);
+//  }
+
+  setvmotorL(Speed_left);
+  setvmotorR(Speed_right);
 }

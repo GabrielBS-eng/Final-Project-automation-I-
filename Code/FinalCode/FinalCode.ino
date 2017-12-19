@@ -60,8 +60,6 @@ volatile float eclipsed_sec = 0 ;   //time eclipsed
 volatile float Speed_right = 0.0;     //spped of motor 
 volatile float Speed_left = 0.0;
 
-int count=0;
-
 //======================================================
 //coder interrupt 
 void encoderCounts1(){counter_motor_right++;}
@@ -77,8 +75,8 @@ void timerIsr()
   Speed_left = (counter_motor_left/(eclipsed_sec*pulse_per_revolution*motor_gear_ratio)*1000000*60);  //RPM, 1000000 --> for converting micro to seconds 
   //Serial.print("\t");
   //Serial.print("Speed: ");
-  Serial.print(Speed_right);
-  Serial.print(Speed_left);
+  //Serial.print(Speed_right);
+  //Serial.print(Speed_left);
   counter_motor_right = 0;
   counter_motor_left = 0;
   eclipsed_sec = 0;
@@ -118,54 +116,54 @@ void loop()
   Serial.print(PotenY);
   delay(1000);
 
-  xAxis = PotenX + x_compensator;
-  yAxis = PotenY + y_compensator;
-
-  //################################# Y POTENCIOMETER FOR FORWARD AND BACKWARD #############################
-  if(PotenY < (511 - y_dead_zone_limit))//backward
-  {
-    digitalWrite(IN3, HIGH);
-    digitalWrite(IN4, LOW);
-    y_motor_factor = map(yAxis, (511 - y_dead_zone_limit), 0 , 0, 255);
-  }
-  if(PotenY > (511 + y_dead_zone_limit))//forward
-  {
-    digitalWrite(IN3, LOW);
-    digitalWrite(IN4, HIGH);
-    y_motor_factor = map(yAxis, (511 + y_dead_zone_limit), 1023, 0, 255);
-  }
-  else
-  {
-    y_motor_factor = 0;
-    digitalWrite(IN3, LOW);
-    digitalWrite(IN4, LOW);
-  }
-  //########################################################################################################
-
-  //################################# X POTENCIOMETER FOR TURN LEFT AND RIGHT ##############################
-  if(xAxis < (511 - x_dead_zone_limit)) //left
-  {
-    digitalWrite(IN1, HIGH);
-    digitalWrite(IN2, LOW);
-    x_motor_factor = map(xAxis, (511 - x_dead_zone_limit), 0, 0, 255);
-  }
-  else if(PotenX > (511 + x_dead_zone_limit)) //right
-  {
-    digitalWrite(IN1, LOW);
-    digitalWrite(IN2, HIGH);
-    x_motor_factor = map(xAxis, (511 + x_dead_zone_limit), 1023, 0, 255);
-  }
-  else 
-  {
-    x_motor_factor = 0; 
-    digitalWrite(IN3, LOW);
-    digitalWrite(IN4, LOW);
-  }
-  //########################################################################################################
-  
-  motorAspeed = y_motor_factor + x_motor_factor;
-  motorBspeed = y_motor_factor - x_motor_factor;
-  
-  analogWrite(ENA, motorAspeed);
-  analogWrite(ENB, motorBspeed);
+//  xAxis = PotenX + x_compensator;
+//  yAxis = PotenY + y_compensator;
+//
+//  //################################# Y POTENCIOMETER FOR FORWARD AND BACKWARD #############################
+//  if(PotenY < (511 - y_dead_zone_limit))//backward
+//  {
+//    digitalWrite(IN3, HIGH);
+//    digitalWrite(IN4, LOW);
+//    y_motor_factor = map(yAxis, (511 - y_dead_zone_limit), 0 , 0, 255);
+//  }
+//  if(PotenY > (511 + y_dead_zone_limit))//forward
+//  {
+//    digitalWrite(IN3, LOW);
+//    digitalWrite(IN4, HIGH);
+//    y_motor_factor = map(yAxis, (511 + y_dead_zone_limit), 1023, 0, 255);
+//  }
+//  else
+//  {
+//    y_motor_factor = 0;
+//    digitalWrite(IN3, LOW);
+//    digitalWrite(IN4, LOW);
+//  }
+//  //########################################################################################################
+//
+//  //################################# X POTENCIOMETER FOR TURN LEFT AND RIGHT ##############################
+//  if(xAxis < (511 - x_dead_zone_limit)) //left
+//  {
+//    digitalWrite(IN1, HIGH);
+//    digitalWrite(IN2, LOW);
+//    x_motor_factor = map(xAxis, (511 - x_dead_zone_limit), 0, 0, 255);
+//  }
+//  else if(PotenX > (511 + x_dead_zone_limit)) //right
+//  {
+//    digitalWrite(IN1, LOW);
+//    digitalWrite(IN2, HIGH);
+//    x_motor_factor = map(xAxis, (511 + x_dead_zone_limit), 1023, 0, 255);
+//  }
+//  else 
+//  {
+//    x_motor_factor = 0; 
+//    digitalWrite(IN3, LOW);
+//    digitalWrite(IN4, LOW);
+//  }
+//  //########################################################################################################
+//  
+//  motorAspeed = y_motor_factor + x_motor_factor;
+//  motorBspeed = y_motor_factor - x_motor_factor;
+//  
+//  analogWrite(ENA, motorAspeed);
+//  analogWrite(ENB, motorBspeed);
 }

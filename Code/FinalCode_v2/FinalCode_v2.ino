@@ -9,8 +9,6 @@
 //SAIFUL AKMAL RAZALI
 
 
-//TODO: USE ONE ENCODER OF EACH MOTOR IN PARALEL
-
 #include <TimerOne.h> //For the encoder
 #include <PID_v1.h>
 
@@ -60,8 +58,6 @@ volatile float eclipsed_sec = 0 ;   //time eclipsed
 volatile float vRcurr = 0.0;     //spped of motor 
 volatile float vLcurr = 0.0;
 
-int count=0;
-
 //======================================================
 //coder interrupt 
 void encoderCounts1(){counter_motor_right++;}
@@ -77,19 +73,17 @@ void timerIsr()
   vLcurr = (counter_motor_left/(eclipsed_sec*pulse_per_revolution*motor_gear_ratio)*1000000*60);  //RPM, 1000000 --> for converting micro to seconds 
   //Serial.print("\t");
   //Serial.print("Speed: ");
-  Serial.print(vRcurr);
-  Serial.print(vLcurr);
+  Serial.println(vRcurr);
+  Serial.println(vLcurr);
+  Serial.println("\n");
   counter_motor_right = 0;
   counter_motor_left = 0;
   eclipsed_sec = 0;
 }
 //========================================================
 
-void setvmotorL(vL) {
-  err = vL-vLcurr;
-
-
-  
+void setvmotorL(float vL) {
+//  err = vL-vLcurr;
   }
 
 
@@ -183,6 +177,24 @@ void setup()
 
 void loop()
 {
+  digitalWrite(IN1, HIGH);
+  digitalWrite(IN2, LOW);
+  analogWrite(ENA, 200);
+  
+  digitalWrite(IN3, LOW);
+  digitalWrite(IN4, HIGH);
+  analogWrite(ENB, 200);
 
+  delay(1000);
 
+  digitalWrite(IN1, LOW);
+  digitalWrite(IN2, LOW);
+  analogWrite(ENA, 0);
+  
+  digitalWrite(IN3, LOW);
+  digitalWrite(IN4, LOW);
+  analogWrite(ENB, 0);
+
+  delay(2000);
+   
 }
